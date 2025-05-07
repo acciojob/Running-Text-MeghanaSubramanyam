@@ -1,30 +1,31 @@
-//your JS code here. If required.
 const input = document.getElementById("speed");
-const textDisplay = document.getElementById("text");
+const textElement = document.getElementById("text");
+
 const message = "We love Programming!";
-let intervalId;
+let currentTimeouts = [];
 
 function renderText() {
-  clearInterval(intervalId);
-  textDisplay.textContent = "";
+  // Clear previous timeouts
+  currentTimeouts.forEach(timeout => clearTimeout(timeout));
+  currentTimeouts = [];
+  textElement.textContent = "";
 
-  const speed = parseInt(input.value);
+  let speed = parseInt(input.value);
   if (isNaN(speed) || speed < 1 || speed > 10) return;
 
   const delay = 500 / speed;
-  let index = 0;
 
-  intervalId = setInterval(() => {
-    textDisplay.textContent += message[index];
-    index++;
-    if (index === message.length) {
-      clearInterval(intervalId);
-    }
-  }, delay);
+  let partialText = "";
+
+  for (let i = 0; i < message.length; i++) {
+    const timeoutId = setTimeout(() => {
+      partialText += message[i];
+      textElement.textContent = partialText;
+    }, i * delay);
+    currentTimeouts.push(timeoutId);
+  }
 }
 
-// Trigger on input change
+// Run on input and on load
 input.addEventListener("input", renderText);
-
-// Initial render
-renderText();
+window.addEventListener("DOMContentLoaded", renderText);
